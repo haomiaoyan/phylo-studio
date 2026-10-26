@@ -950,11 +950,25 @@ input[type='range']::-moz-range-thumb {
 
 .tree-hint {
   position: absolute;
-  bottom: 10px;
+  bottom: 12px;
   left: 14px;
+  padding: 5px 11px;
+  border-radius: 980px;
   font-size: 11px;
   color: var(--text-3);
+  background: rgba(10, 10, 12, 0.72);
+  border: 1px solid var(--hairline);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   pointer-events: none;
+}
+
+@media (max-width: 780px) {
+  /* A phone has no wheel and no hover, so only the tap hint is true there. */
+  .tree-hint {
+    font-size: 10.5px;
+    padding: 4px 9px;
+  }
 }
 
 .tree-reset {
