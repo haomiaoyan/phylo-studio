@@ -204,10 +204,11 @@ export default function TreeCanvas(props: TreeCanvasProps) {
   // Support badges are 24x15 boxes. On a bushy tree the deep internal nodes all
   // collapse into the middle and their badges would overlap into an unreadable
   // cluster, so keep only the outermost of any colliding pair — the deep ones
-  // are the least informative and the least visible.
+  // are the least informative and the least visible. A value of 100 is the
+  // default expectation and only adds noise, so it is never drawn.
   const supportNodes = useMemo(() => {
     const candidates = layout.nodes
-      .filter((n) => n.children.length > 0 && n.support !== undefined)
+      .filter((n) => n.children.length > 0 && n.support !== undefined && n.support < 99.5)
       .sort((a, b) => b.radius - a.radius)
     const kept: typeof candidates = []
     for (const node of candidates) {
