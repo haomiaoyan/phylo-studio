@@ -1,0 +1,14 @@
+node_modules
+dist
+dist-ssr
+*.local
+.DS_Store
+
+# local scratch
+.tmp
+.tmp-*
+.shots
+.tools
+verify-*.png
+verify-*.mjs
+*.log
