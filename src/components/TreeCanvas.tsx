@@ -27,6 +27,8 @@ const labelRoom = (labels: string[]) => {
 }
 /** Labels pointing straight up or down need vertical room along the radius. */
 const VERTICAL_LABEL_ROOM = 118
+/** Shallow tips get their label pulled out to this fraction of the radius. */
+const LABEL_RING = 0.72
 const RECT_LEFT = 62
 const RECT_RIGHT = 210
 const RECT_TOP = 34
@@ -275,8 +277,15 @@ export default function TreeCanvas(props: TreeCanvasProps) {
               const isSelected = selected === index
               const deg = (leaf.angle * 180) / Math.PI
               const flip = mode === 'radial' && Math.cos(leaf.angle) < 0
-              const lx = mode === 'radial' ? p.x + Math.cos(leaf.angle) * 11 : p.x + 11
-              const ly = mode === 'radial' ? p.y + Math.sin(leaf.angle) * 11 : p.y
+              // Tips that sit close to the root would otherwise stack their
+              // labels on top of each other, so shallow labels are pulled out
+              // to a comfortable ring and joined to their tip by a leader.
+              const tipR = leaf.radius * radialR
+              const ringR = radialR * LABEL_RING
+              const labelR = mode === 'radial' ? Math.max(tipR, ringR) : tipR
+              const lx = mode === 'radial' ? cx + Math.cos(leaf.angle) * (labelR + 11) : p.x + 11
+              const ly = mode === 'radial' ? cy + Math.sin(leaf.angle) * (labelR + 11) : p.y
+              const leader = mode === 'radial' && labelR - tipR > 36
               return (
                 <g
                   key={`leaf-${leaf.id}-${animateKey}`}
@@ -299,6 +308,16 @@ export default function TreeCanvas(props: TreeCanvasProps) {
                   }}
                   aria-label={labels[index]}
                 >
+                  {leader && (
+                    <line
+                      className="leaf-leader"
+                      x1={p.x}
+                      y1={p.y}
+                      x2={cx + Math.cos(leaf.angle) * labelR}
+                      y2={cy + Math.sin(leaf.angle) * labelR}
+                      stroke={color}
+                    />
+                  )}
                   <text
                     className="leaf-label"
                     x={lx}

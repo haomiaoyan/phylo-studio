@@ -823,7 +823,9 @@ input[type='range']::-moz-range-thumb {
   min-height: 540px;
   overflow: auto;
   display: grid;
-  place-items: center;
+  /* `safe` keeps the left/top edge reachable when the tree is wider than the
+     box — plain centring would push it into unreachable negative scroll. */
+  place-items: safe center;
 }
 
 .tree-svg {
@@ -885,6 +887,14 @@ input[type='range']::-moz-range-thumb {
   to {
     opacity: 1;
   }
+}
+
+.leaf-leader {
+  fill: none;
+  stroke-width: 1;
+  stroke-dasharray: 2 4;
+  opacity: 0.3;
+  pointer-events: none;
 }
 
 .leaf-label {
