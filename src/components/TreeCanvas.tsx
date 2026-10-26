@@ -201,7 +201,25 @@ export default function TreeCanvas(props: TreeCanvasProps) {
     drag.current = null
   }
 
-  const supportNodes = layout.nodes.filter((n) => n.children.length > 0 && n.support !== undefined)
+  // Support badges are 24x15 boxes. On a bushy tree the deep internal nodes all
+  // collapse into the middle and their badges would overlap into an unreadable
+  // cluster, so keep only the outermost of any colliding pair — the deep ones
+  // are the least informative and the least visible.
+  const supportNodes = useMemo(() => {
+    const candidates = layout.nodes
+      .filter((n) => n.children.length > 0 && n.support !== undefined)
+      .sort((a, b) => b.radius - a.radius)
+    const kept: typeof candidates = []
+    for (const node of candidates) {
+      const p = pos(node)
+      const clash = kept.some((k) => {
+        const q = pos(k)
+        return Math.abs(q.x - p.x) < 30 && Math.abs(q.y - p.y) < 20
+      })
+      if (!clash) kept.push(node)
+    }
+    return kept
+  }, [layout, pos])
 
   // Zoom about the crown centre rather than the SVG origin.
   const zoomX = offset.x + cx * (1 - scale)
