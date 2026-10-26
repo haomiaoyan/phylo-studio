@@ -25,8 +25,8 @@ const labelRoom = (labels: string[]) => {
   const longest = labels.reduce((max, l) => Math.max(max, l.length), 6)
   return Math.min(230, 26 + longest * 6.4)
 }
-/** Vertical padding above/below the radial crown. */
-const RADIAL_PAD_Y = 26
+/** Labels pointing straight up or down need vertical room along the radius. */
+const VERTICAL_LABEL_ROOM = 118
 const RECT_LEFT = 62
 const RECT_RIGHT = 210
 const RECT_TOP = 34
@@ -108,10 +108,11 @@ export default function TreeCanvas(props: TreeCanvasProps) {
 
   const cx = vbW / 2
   const cy = vbH / 2
-  // Radial crown radius: leave horizontal room for the longest label, vertical
-  // room for the outer ring stroke and the tip dots.
+  // Radial crown radius: reserve horizontal room for the longest label and the
+  // same kind of room vertically, because a label pointing straight up/down
+  // extends along the radius instead of sideways.
   const room = labelRoom(labels)
-  const radialR = Math.max(96, Math.min(vbW / 2 - room, vbH / 2 - RADIAL_PAD_Y))
+  const radialR = Math.max(96, Math.min(vbW / 2 - room, vbH / 2 - Math.min(room, VERTICAL_LABEL_ROOM)))
 
   const pos = useCallback(
     (node: { radius: number; angle: number; row: number }): Point => {
